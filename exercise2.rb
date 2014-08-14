@@ -9,7 +9,7 @@ class Position
     @y = y
   end
 
-  #Sets the maximum position possible on the grid
+  #Sets the maximum position possible on the grid (plateau)
   def self.set_max(max_x, max_y)
     @@max_x = max_x
     @@max_y = max_y
@@ -40,10 +40,13 @@ class Rover < Position
   #Possible headings
   @@headings = ['N', 'E', 'S', 'W']
 
+  attr_reader :start_point, :heading, :name
+
   #Constructor
-  def initialize(start_point, heading)
+  def initialize(start_point, heading, name)
     super(start_point.x, start_point.y)
     @curr_heading = @@headings.index(heading.upcase)
+    @name = name
   end
 
   #Gives rover's coordinates and direction it's heading 
@@ -78,29 +81,48 @@ class Rover < Position
       puts "Wrong argument: '#{direction}'"
     end 
   end
+
+  #Processes the command message of spinning and forward commands from NASA. Forward commands are assumed to be of 1 step.
+  def move(message)
+    sequence = message.scan /\w/
+    sequence.each do |command|
+      if (command == 'L') || (command == 'R')
+        spin(command)
+      elsif (command == 'M')
+        forward(1)
+      else
+        puts "Wrong command: '#{command}'"
+      end
+    end
+  end
 end
 
-rover1 = Rover.new(Position.new(1,2), 'N')
-rover1.spin('L')
-rover1.forward(1)
-rover1.spin('L')
-rover1.forward(1)
-rover1.spin('L')
-rover1.forward(1)
-rover1.spin('L')
-rover1.forward(1)
-rover1.forward(1)
-puts rover1
+##########Convenience class encapsulating rover setup, command issue and execution
+class Commander
+  def initialize 
+    puts "Please provide the name for the rover:"
+    rover_name = gets.chomp
+    puts "Please provide the coordinates and heading for rover #{rover_name} separated by spaces:"
+    status = gets.chomp.split(' ')
+    @new_rover = Rover.new(Position.new(status[0].to_i, status[1].to_i), status[2], rover_name)
+    puts "Please provide the movement message to be sent to rover " + @new_rover.name + ":"
+    @new_command = gets.chomp
+  end
 
-rover2 = Rover.new(Position.new(3,3), 'E')
-rover2.forward(1)
-rover2.forward(1)
-rover2.spin('R')
-rover2.forward(1)
-rover2.forward(1)
-rover2.spin('R')
-rover2.forward(1)
-rover2.spin('R')
-rover2.spin('R')
-rover2.forward(1)
-puts rover2
+  def execute
+    @new_rover.move(@new_command)
+    puts "The current position of rover #{@new_rover.name}: #{@new_rover}"
+  end
+end
+
+#Set maximum dimensions for plateau
+puts "Please provide the maximum coordinates for the grid representing the plateau:"
+max_coords = gets.chomp.split(' ')
+Rover.set_max(max_coords[0], max_coords[1])
+
+#Order rovers to move
+rover1_command = Commander.new
+rover1_command.execute
+puts
+rover2_command = Commander.new
+rover2_command.execute
