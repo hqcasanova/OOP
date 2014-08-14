@@ -24,7 +24,7 @@ class Instructor < Person
   end
 end
 
-postgrad = Student.new("Hector")
-lecturer = Instructor.new("Javier")
+postgrad = Student.new("Cristina")
+lecturer = Instructor.new("Chris")
 puts postgrad
 puts lecturer
