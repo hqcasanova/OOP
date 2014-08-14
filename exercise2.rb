@@ -1,4 +1,3 @@
-
 ##########Rovers' position on grid
 class Position
   attr_reader :x, :y
@@ -115,12 +114,12 @@ class Commander
   end
 end
 
-#Set maximum dimensions for plateau
+#Sets maximum dimensions for plateau
 puts "Please provide the maximum coordinates for the grid representing the plateau:"
 max_coords = gets.chomp.split(' ')
 Rover.set_max(max_coords[0], max_coords[1])
 
-#Order rovers to move
+#Orders rovers to move
 rover1_command = Commander.new
 rover1_command.execute
 puts
