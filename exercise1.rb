@@ -24,7 +24,10 @@ class Instructor < Person
   end
 end
 
+#Instant birth and introductions
 postgrad = Student.new("Cristina")
 lecturer = Instructor.new("Chris")
 puts postgrad
+puts lecturer
+
 puts lecturer
