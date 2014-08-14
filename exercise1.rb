@@ -34,3 +34,6 @@ lecturer.teach
 postgrad.learn
 #postgrad.teach
 #lecturer.learn
+
+#Both commented-out lines try to apply methods on objects that don't have them. Therefore, the interpreter stops at either of both lines
+#when trying to execute the program, throwing the corresponding 'undefined method' error. Hence their being commented out.
