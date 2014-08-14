@@ -13,14 +13,14 @@ end
 #Child class
 class Student < Person
   def learn
-    "I get it!"
+    puts "I get it!"
   end
 end
 
 #Child class
 class Instructor < Person
   def teach
-    "Everything in Ruby is an Object"
+    puts "Everything in Ruby is an Object"
   end
 end
 
@@ -30,4 +30,7 @@ lecturer = Instructor.new("Chris")
 puts postgrad
 puts lecturer
 
-puts lecturer
+lecturer.teach
+postgrad.learn
+#postgrad.teach
+#lecturer.learn
