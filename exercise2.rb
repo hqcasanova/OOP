@@ -62,6 +62,6 @@ class Rover < Position
   end  
 end
 
-rover1 = Rover.new(Position.new(1,2), 'W')
+rover1 = Rover.new(Position.new(0,0), 'N')
 rover1.forward(1)
 puts rover1
