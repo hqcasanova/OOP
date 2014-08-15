@@ -1,4 +1,4 @@
-##########Rovers' position on grid
+##########Rover's position on grid
 class Position
   attr_reader :x, :y
 
