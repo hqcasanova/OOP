@@ -17,8 +17,6 @@ class Taxman
 
   #Calculate tax for a given price tag
   def apply_tax(price, tax)
-    puts MONEY_FORMAT % price
-    puts MONEY_FORMAT % tax
     return (price * tax / BigDecimal.new(5)).round / BigDecimal.new(20)   #rounding up to nearest 0.05
   end
 
@@ -36,11 +34,15 @@ class Item
   attr_accessor :price
 
   def initialize(name, type, is_imported)
-    @name = name
+    @is_imported = is_imported
+    new_name = name
+    if is_imported
+      new_name = 'imported ' + new_name
+    end
+    @name = new_name
     @price = BigDecimal.new(0)
     @taxes = BigDecimal.new(0)
     @type = type
-    @is_imported = is_imported
   end
 
   #Calculates corresponding tax total depending on properties and current rates set by tax authority
@@ -52,16 +54,12 @@ class Item
     unless taxman.exempt_basic.include?(@type)
       @taxes += taxman.apply_tax(@price, taxman.sales_tax)
     end
-    @price += taxman.apply_tax(@price, @taxes)
+    @price += @taxes
   end
 
   #Full description of the item's state, with price including taxes
   def to_s
-    description = "#{@name} at #{MONEY_FORMAT % @price}"
-    if @is_imported
-      description = 'imported ' + description
-    end
-    return description 
+    "#{@name} at #{MONEY_FORMAT % @price}" 
   end
 end
 
@@ -74,14 +72,23 @@ class Cart
     @list = {}
   end
 
-  #Prints out the list of purchased items along with their price including taxes
+  #Lists the cart's items with their respective prices before taxes
   def to_s
+    printed_list = ""
+    @list.each do |item, quantity|
+      printed_list += "#{quantity} #{item}\n"
+    end
+    return printed_list
+  end
+
+  #Prints out the list of purchased items along with their price including taxes
+  def after_taxes
     printed_list = ""
     @total = 0
     @list.each do |item, quantity|
       item_total = quantity * item.price
       @total += item_total
-      printed_list += "#{quantity} #{item}: #{MONEY_FORMAT % item_total}\n"
+      printed_list += "#{quantity} #{item.name}: #{MONEY_FORMAT % item.price}\n"
     end
     return printed_list
   end
@@ -96,8 +103,9 @@ class Cart
   end
 
   #Convenience method that prints out standard receipt, including subtotal of taxes
-  def checkout
-    puts self
+  def checkout(receipt_name)
+    puts receipt_name
+    puts after_taxes
     total_taxes
     puts "Total: #{MONEY_FORMAT % @total}\n"
   end
@@ -125,12 +133,11 @@ chocbar.price = BigDecimal.new('0.85')
 loblaws_cart.list = {book => 1, cd => 1, chocbar => 1}
 puts "#{loblaws_cart}"
 
-#Checkout 1
-puts "\nReceipt 1:"
+#Checkout 1 
 book.apply_taxes(ontario)
 cd.apply_taxes(ontario)
 chocbar.apply_taxes(ontario)
-loblaws_cart.checkout
+loblaws_cart.checkout("\nReceipt 1:")
 
 #Loblaws visit 2
 puts "\nCart 2:"
@@ -139,28 +146,23 @@ perfume_imported.price = BigDecimal.new('47.50')
 loblaws_cart.list = {chocolates => 1, perfume_imported => 1}
 puts "#{loblaws_cart}"
 
-# #Checkout 2
-puts "\nReceipt 2:"
+#Checkout 2
 chocolates.apply_taxes(ontario)
+perfume_imported.apply_taxes(ontario)
+loblaws_cart.checkout("\nReceipt 2:")
+
+#Loblaws visit 3
+puts "\nCart 3"
+perfume_imported.price = BigDecimal.new('27.99')
+perfume.price = BigDecimal.new('18.99')
+pills.price = BigDecimal.new('9.75')
+chocolates.price = BigDecimal.new('11.25')
+loblaws_cart.list = {perfume_imported => 1, perfume => 1, pills => 1, chocolates => 1}
+puts "#{loblaws_cart}"
+
+#Checkout 3
+perfume_imported.apply_taxes(ontario)
 perfume.apply_taxes(ontario)
-loblaws_cart.checkout
-
-# #Loblaws visit 3
-#puts "\nCart 3"
-# perfume_imported.price = 32.19
-# puts perfume_imported
-# perfume.price = 20.89
-# puts perfume
-# pills.price = 9.75
-# puts pills
-# chocolates.price = 11.85
-# puts chocolates
-# loblaws_cart.list = {perfume_imported => 1, perfume => 1, pills => 1, chocolates => 1}
-# puts "#{loblaws_cart}\n"
-
-# #Checkout 3
-# perfume_imported.apply_taxes(ontario)
-# perfume.apply_taxes(ontario)
-# pills.apply_taxes(ontario)
-# chocolates.apply_taxes(ontario)
-# loblaws_cart.checkout
+pills.apply_taxes(ontario)
+chocolates.apply_taxes(ontario)
+loblaws_cart.checkout("\nReceipt 3:")
