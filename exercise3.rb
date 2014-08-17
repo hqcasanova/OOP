@@ -17,7 +17,7 @@ class Taxman
 
   #Calculate tax for a given price tag
   def apply_tax(price, tax)
-    return (price * tax / BigDecimal.new(5)).round / BigDecimal.new(20)   #rounding up to nearest 0.05
+    return (price * tax / BigDecimal.new(5)).ceil / BigDecimal.new(20)   #rounding up to nearest 0.05
   end
 
   #Describes current tax rates and gives a list of exempt products
